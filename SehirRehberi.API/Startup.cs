@@ -14,8 +14,9 @@ using Microsoft.Extensions.Logging;
 using SehirRehberi.API.Data;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Formatters;
-
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace SehirRehberi.API
 {
@@ -25,12 +26,13 @@ namespace SehirRehberi.API
         {
             Configuration = configuration;
         }
-
+     
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var key = Encoding.ASCII.GetBytes(Configuration.GetSection("Appsettings:Token").Value);
             services.AddDbContext<DataContext>(x =>
             x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))); //DataContext'te bunu kullan
             services.AddAutoMapper(typeof(Startup));
@@ -53,6 +55,16 @@ namespace SehirRehberi.API
                     .AllowAnyMethod()
                     .AllowAnyHeader());
             });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
 
             services.AddControllers();
         }
@@ -65,6 +77,7 @@ namespace SehirRehberi.API
                 app.UseDeveloperExceptionPage();
             }
             //app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials()) ;
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
 
