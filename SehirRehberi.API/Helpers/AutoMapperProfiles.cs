@@ -19,8 +19,8 @@ namespace SehirRehberi.API.Helpers
               });
 
             CreateMap<City, CityForDetailDto>();//isimlere bak aynıysa map et
-            //CreateMap<PhotoForCreationDto, Photo>();
-            //CreateMap<PhotoForReturnDto, Photo>();
+            CreateMap<PhotoForCreationDto, Photo>();
+            CreateMap<PhotoForReturnDto, Photo>();
         }
     }
 }
