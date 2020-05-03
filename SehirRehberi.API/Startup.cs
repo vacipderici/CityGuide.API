@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using SehirRehberi.API.Helpers;
 
 namespace SehirRehberi.API
 {
@@ -33,6 +34,7 @@ namespace SehirRehberi.API
         public void ConfigureServices(IServiceCollection services)
         {
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("Appsettings:Token").Value);
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings")); //Objeye mapliyorum
             services.AddDbContext<DataContext>(x =>
             x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))); //DataContext'te bunu kullan
             services.AddAutoMapper(typeof(Startup));
