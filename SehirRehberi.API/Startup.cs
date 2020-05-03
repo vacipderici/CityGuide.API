@@ -47,7 +47,8 @@ namespace SehirRehberi.API
            
 
 
-            services.AddScoped<IAppRepository, AppRepository>(); //Controllerde kullanıldığı zaman IAppRepository kullancağız ama işlemleri APP'den çağırcak
+            services.AddScoped<IAppRepository, AppRepository>(); //Controllerde kullanıldığı zaman IAppRepository kullancağız ama işlemleri APP'den çağıracak
+            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
