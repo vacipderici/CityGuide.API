@@ -12,6 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SehirRehberi.API.Data;
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc.Formatters;
+
+
 
 namespace SehirRehberi.API
 {
@@ -27,8 +31,29 @@ namespace SehirRehberi.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataContext>(x=>
+            services.AddDbContext<DataContext>(x =>
             x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))); //DataContext'te bunu kullan
+            services.AddAutoMapper(typeof(Startup));
+            services.AddControllers()
+                   .AddNewtonsoftJson();
+
+            services.AddControllers()
+           .AddNewtonsoftJson(options =>
+            {
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
+           
+
+
+            services.AddScoped<IAppRepository, AppRepository>(); //Controllerde kullanıldığı zaman IAppRepository kullancağız ama işlemleri APP'den çağırcak
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+            });
+
             services.AddControllers();
         }
 
@@ -39,7 +64,7 @@ namespace SehirRehberi.API
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials()) ;
+            //app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials()) ;
 
             app.UseHttpsRedirection();
 
